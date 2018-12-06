@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt 
 from dice_roll import DiceRoll 
 from die import Die 
+from scenarios import Scenario 
 import pygal
 
 def check_win(sumup, point_on, point_set=0):
@@ -23,8 +24,6 @@ def check_win(sumup, point_on, point_set=0):
 	return win
 
 
-def takeSecond(elem):
-	return elem[1]
 
 
 #Create a randomwalk set
@@ -36,6 +35,9 @@ numset = list(range(2,13))
 x_values = list(range(2,13))
 
 # BTW rolls per hour are about 102
+field_bets = [4,5,6,8,9,10]
+max_odds = True
+scenario1 = Scenario(field_bets, max_odds)
 
 #print(type(x_values))
 streak_count = 1
@@ -76,8 +78,11 @@ for i in range(len(dicrole.die1)):
 		win_count += 1
 		point_on = False
 		point_set = 0
+		scenario1.winnings += scenario1.wager
+
 	else:
 		pass_count += 1
+		scenario1.compare_field(sumup)
 		if sumup == 2 or sumup == 3 or sumup == 12 or sumup == 11:
 			pass
 		else:
@@ -144,6 +149,7 @@ print("Passes: " + str(pass_count))
 print("Field payoffs: " + str(money_pass))
 
 print("Total Rolls: " + str(win_count + lose_count + pass_count))
+print("Scenario 1 payoffs: " + str(scenario1.winnings))
 
 roll_listy = list(streak_dict.values())
 roll_listx = list(streak_dict.keys())
