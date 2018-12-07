@@ -9,18 +9,18 @@ def check_win(sumup, point_on, point_set=0):
 	win = "Continue"
 	if sumup == 7 and point_on:
 		# this is a losing role
-		win = "lose"
+		win = "crap_out"
 		
 	elif (sumup == 2 or sumup == 3 or sumup == 12) and not point_on:
 		#this is a losing role
-		win = "lose"
+		win = "craps"
 		
-	elif not point_on and sumup == 7:
+	elif not point_on and (sumup == 7 or sumup == 11):
 		#This is a win
 		win = "win"
 		
 	elif point_on and sumup == point_set:
-		win = "win"
+		win = "point_made"
 	return win
 
 
@@ -35,7 +35,7 @@ numset = list(range(2,13))
 x_values = list(range(2,13))
 
 # BTW rolls per hour are about 102
-field_bets = [4,5,6,8,9,10]
+field_bets = [6,8]
 max_odds = True
 scenario1 = Scenario(field_bets, max_odds)
 
@@ -67,18 +67,35 @@ for i in range(len(dicrole.die1)):
 		else:
 			point_set = sumup
 			point_on = True
+			scenario1.set_bets()
 	#the outcome of the roll is based on whether the point is on or off 
 
 
-	if outcome == "lose":
+	if outcome == "craps":
 		lose_count += 1
 		point_on = False
 		point_set = 0
+		scenario1.come_out()
+
+	elif outcome == "crap_out":
+		lose_count += 1
+		point_on = False
+		point_set = 0
+		scenario1.come_out()
+
+	elif outcome == "point_made":
+		win_count += 1
+		point_on = False
+		point_set = 0
+		scenario1.point_made(sumup)
+
 	elif outcome == "win":
 		win_count += 1
 		point_on = False
 		point_set = 0
+		scenario1.bank += scenario1.wager * 2
 		scenario1.winnings += scenario1.wager
+		scenario1.come_out()
 
 	else:
 		pass_count += 1
@@ -150,6 +167,7 @@ print("Field payoffs: " + str(money_pass))
 
 print("Total Rolls: " + str(win_count + lose_count + pass_count))
 print("Scenario 1 payoffs: " + str(scenario1.winnings))
+print("Scenario 1 bank: " + str(scenario1.bank))
 
 roll_listy = list(streak_dict.values())
 roll_listx = list(streak_dict.keys())
